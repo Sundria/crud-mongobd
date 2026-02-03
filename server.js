@@ -1,49 +1,37 @@
 import express from 'express';
-
+import "dotenv/config";
+import { PrismaClient } from './generated/prisma/client.js';
 
 const app = express();
+const prisma = new PrismaClient();
+
 const rota = 3000;
 
 app.use(express.json());
 
-const users = [{
-    id: 1,
-    nome: 'João',
-    email: 'joao@gmail.com'
-}];
+app.post('/usuarios', async (req, res) => {
+    const { name, email, age } = req.body
 
-app.post('/usuarios', (req, res) => {
-    const { nome, email } = req.body
+    await prisma.user.create({
+        data: {
+            name,
+            email,
+            age
+        }
+    })
 
-    const newId = users.length + 1;
-
-    const newUser = {
-        id: newId,
-        nome,
-        email
-    }
-
-    if (newId > 0) {
-        users.push(newUser)
-    }
-
-    return res.status(200).send('Usuario criado com sucesso');
+    return res.status(201).send("Usuário criado")
 
 })
 
 app.get('/usuarios', (req, res) => {
-    res.json(users);
+    res.status(200).json("consegui acessar a rota");
 })
-
-
-
 
 app.listen(rota, () => {
     console.log(`Rota em https://localhost${rota}`);
-
 }
 )
-
 
 /*
     Criar uma API de usuarios
